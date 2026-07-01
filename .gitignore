@@ -7,3 +7,4 @@ data/*.db
 !data/cleaned/.gitkeep
 .venv/
 .ipynb_checkpoints/
+outputs/screenshots/_tmp.html
