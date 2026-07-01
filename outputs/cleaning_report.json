@@ -1,0 +1,29 @@
+{
+  "consumption": {
+    "raw_rows": 34505,
+    "grid_rows": 34608,
+    "spikes_removed": 27,
+    "gaps_imputed": 268,
+    "long_gaps_masked": 0,
+    "clean_rows": 34608,
+    "mean_completeness": 0.9961
+  },
+  "generation": {
+    "raw_rows": 21823,
+    "grid_rows": 21888,
+    "spikes_removed": 10,
+    "gaps_imputed": 162,
+    "long_gaps_masked": 0,
+    "clean_rows": 21888,
+    "mean_completeness": 0.9963
+  },
+  "weather": {
+    "raw_rows": 123120,
+    "grid_rows": 123120,
+    "spikes_removed": 0,
+    "gaps_imputed": 0,
+    "long_gaps_masked": 0,
+    "clean_rows": 123120,
+    "mean_completeness": 1.0
+  }
+}

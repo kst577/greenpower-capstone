@@ -1,0 +1,17 @@
+# Production storage: TimescaleDB. Spin up, then apply db/migrations in order.
+#   docker compose up -d
+#   for f in db/migrations/*.sql; do psql "$DATABASE_URL" -f "$f"; done
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: greenpower-tsdb
+    environment:
+      POSTGRES_DB: greenpower
+      POSTGRES_USER: greenpower
+      POSTGRES_PASSWORD: greenpower
+    ports:
+      - "5432:5432"
+    volumes:
+      - tsdb_data:/var/lib/postgresql/data
+volumes:
+  tsdb_data:

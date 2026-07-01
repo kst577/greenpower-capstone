@@ -1,0 +1,15 @@
+{
+  "cons_hourly_rows": 34608,
+  "cons_daily_rows": 1442,
+  "cons_monthly_rows": 48,
+  "gen_daily_rows": 912,
+  "par_mean": 1.92,
+  "load_factor_mean": 0.529,
+  "median_peak_hour": 20,
+  "evening_peak_share": 99.0,
+  "daily_total_mean_kwh": 26.2,
+  "r_load_temp_hourly": -0.362,
+  "r_load_temp_daily": -0.677,
+  "r_load_hdh_daily": 0.689,
+  "wind_cf_mean": 29.9
+}

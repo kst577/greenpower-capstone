@@ -1,0 +1,28 @@
+{
+  "test_days": 60,
+  "test_hours": 1440,
+  "train_hours": 33000,
+  "split_date": "2010-09-27",
+  "models": {
+    "Seasonal-naive": {
+      "MAE": 0.299,
+      "RMSE": 0.392,
+      "MAPE": 28.5
+    },
+    "Ridge regression": {
+      "MAE": 0.179,
+      "RMSE": 0.24,
+      "MAPE": 17.3
+    },
+    "MLP neural net": {
+      "MAE": 0.136,
+      "RMSE": 0.177,
+      "MAPE": 13.9
+    }
+  },
+  "best_model": "MLP neural net",
+  "best_mape": 13.9,
+  "best_rmse": 0.177,
+  "improve_vs_baseline_pct": 55.0,
+  "neural_model_used": "MLP neural net"
+}

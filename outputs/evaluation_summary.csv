@@ -1,0 +1,4 @@
+model,MAE_kW,RMSE_kW,MAPE_pct
+Seasonal-naive,0.299,0.392,28.5
+Ridge regression,0.179,0.24,17.3
+MLP neural net,0.136,0.177,13.9
