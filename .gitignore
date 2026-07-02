@@ -8,3 +8,4 @@ data/*.db
 .venv/
 .ipynb_checkpoints/
 outputs/screenshots/_tmp.html
+venv/
