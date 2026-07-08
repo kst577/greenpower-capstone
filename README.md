@@ -4,7 +4,7 @@ An end-to-end energy analytics capstone for transforming raw electricity, renewa
 
 **Capstone:** GreenPower Utilities — Energy Consumption Analytics  
 **Programme:** M.Tech Data Engineering, IIT Jodhpur  
-**Team:** Harshit Nirmal Jain (G25AI1021), K R Devika (G25AI1022), Kartik Dadhich (G25AI1023), Kirtiman Sarangi (G25AI1024), Kollipara Teja (G25AI1025)
+**Team:** Harshit Nirmal Jain (G25AI1021), K R Devika (G25AI1022), Kartik Dadhich (G25AI1023), Kirtiman Sarangi (G25AI1024), Kollipara Teja (G25AI1025)    
 **Primary DOI anchor:** [10.1109/5.192069](https://doi.org/10.1109/5.192069)  
 **Theme:** Smart-meter analytics, demand forecasting, anomaly detection, renewable-energy context, and operational dashboarding
 
