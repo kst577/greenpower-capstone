@@ -1,16 +1,10 @@
 # GreenPower Utilities — Energy Consumption Analytics
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![SQLite](https://img.shields.io/badge/Storage-SQLite%20%2B%20TimescaleDB-green)
-![ML](https://img.shields.io/badge/ML-Forecasting%20%2B%20Anomaly%20Detection-orange)
-![Dashboard](https://img.shields.io/badge/Dashboard-Static%20HTML%20%2B%20Streamlit-lightgrey)
-![Status](https://img.shields.io/badge/Status-Capstone%20Project-success)
-
 An end-to-end energy analytics capstone for transforming raw electricity, renewable-generation, and weather data into a clean hourly time-series layer, engineered forecasting features, predictive models, anomaly flags, and a dashboard-ready reporting system.
 
 **Capstone:** GreenPower Utilities — Energy Consumption Analytics  
 **Programme:** M.Tech Data Engineering, IIT Jodhpur  
-**Team:** Group 5  
+**Team:** Harshit Nirmal Jain (G25AI1021), K R Devika (G25AI1022), Kartik Dadhich (G25AI1023), Kirtiman Sarangi (G25AI1024), Kollipara Teja (G25AI1025)
 **Primary DOI anchor:** [10.1109/5.192069](https://doi.org/10.1109/5.192069)  
 **Theme:** Smart-meter analytics, demand forecasting, anomaly detection, renewable-energy context, and operational dashboarding
 
