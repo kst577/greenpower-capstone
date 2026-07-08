@@ -8,6 +8,7 @@ An end-to-end energy analytics capstone for transforming raw electricity, renewa
 **Inspired by:** Enhancing anomaly detection in electrical consumption profiles through computational intelligence  
 - **Authors:** Santiago Felipe Luna-Romero, Xavier Serrano-Guerrero, Mauren Abreu de Souza, Guillermo Escrivá-Escrivà    
 - **Journal:** *Energy Reports*, Volume 11, June 2024, Pages 951–962     
+
 **Paper DOI:** [10.1016/j.egyr.2023.12.045](https://doi.org/10.1016/j.egyr.2023.12.045)      
 **Theme:** Smart-meter analytics, demand forecasting, anomaly detection, renewable-energy context, and operational dashboarding
 
