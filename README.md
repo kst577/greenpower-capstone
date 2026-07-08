@@ -1,189 +1,235 @@
 # GreenPower Utilities — Energy Consumption Analytics
 
-An end-to-end data-engineering capstone that converts raw public energy and weather datasets into a cleaned hourly time-series layer, a portable analytics store, engineered demand features, forecasting models, anomaly detection outputs, and an operational dashboard.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![SQLite](https://img.shields.io/badge/Storage-SQLite%20%2B%20TimescaleDB-green)
+![ML](https://img.shields.io/badge/ML-Forecasting%20%2B%20Anomaly%20Detection-orange)
+![Dashboard](https://img.shields.io/badge/Dashboard-Static%20HTML%20%2B%20Streamlit-lightgrey)
+![Status](https://img.shields.io/badge/Status-Capstone%20Project-success)
 
-**Capstone:** Six-week Data Engineering Capstone — IIT Jodhpur  
-**Team:** Harshit Nirmal Jain (G25AI1021), K R Devika (G25AI1022), Kartik Dadhich (G25AI1023), Kirtiman Sarangi (G25AI1024), Kollipara Teja (G25AI1025)  
+An end-to-end energy analytics capstone for transforming raw electricity, renewable-generation, and weather data into a clean hourly time-series layer, engineered forecasting features, predictive models, anomaly flags, and a dashboard-ready reporting system.
+
+**Capstone:** GreenPower Utilities — Energy Consumption Analytics  
 **Programme:** M.Tech Data Engineering, IIT Jodhpur  
-**Theme:** Energy consumption analytics, demand forecasting, anomaly detection, and dashboarding
+**Team:** Group 5  
+**Primary DOI anchor:** [10.1109/5.192069](https://doi.org/10.1109/5.192069)  
+**Theme:** Smart-meter analytics, demand forecasting, anomaly detection, renewable-energy context, and operational dashboarding
 
 ---
 
 ## Table of Contents
 
-- [The Problem](#the-problem)
-- [What We Do](#what-we-do)
-- [Research Questions](#research-questions)
+- [Executive Summary](#executive-summary)
+- [Problem Statement](#problem-statement)
+- [Project Objectives](#project-objectives)
+- [System Architecture](#system-architecture)
 - [Pipeline Overview](#pipeline-overview)
 - [Data Sources](#data-sources)
 - [Cleaning and Preprocessing](#cleaning-and-preprocessing)
-- [Storage Layer](#storage-layer)
+- [Storage Design](#storage-design)
 - [Feature Engineering](#feature-engineering)
 - [Forecasting Models](#forecasting-models)
 - [Anomaly Detection](#anomaly-detection)
-- [Dashboard](#dashboard)
-- [Results](#results)
+- [Dashboard and Reporting](#dashboard-and-reporting)
+- [Results Summary](#results-summary)
 - [Quick Start](#quick-start)
 - [Repository Structure](#repository-structure)
-- [Progress](#progress)
 - [Reproducibility](#reproducibility)
+- [Professional Scope and Limitations](#professional-scope-and-limitations)
+- [References](#references)
 - [Team](#team)
 
 ---
 
-## The Problem
+## Executive Summary
 
-Energy utilities need reliable visibility into consumption patterns, renewable generation behavior, demand peaks, and abnormal readings. Raw public energy datasets are useful, but they are usually not ready for analytics because they contain missing timestamps, sensor spikes, inconsistent resolutions, and limited operational context.
+GreenPower Utilities is a six-week data-engineering capstone that demonstrates how utility-scale energy data can be converted into actionable analytics. The repository implements a complete pipeline that begins with raw or synthetic energy data and ends with a dashboard-ready analytics layer.
 
-For a utility-style analytics workflow, the raw data must be transformed into a reliable time-series foundation before modelling can be trusted.
+The system is designed to be both **portable** and **production-aware**:
 
-**We build that foundation and analytics layer for GreenPower Utilities.**
-
----
-
-## What We Do
-
-This repository implements a complete, runnable energy analytics pipeline. It takes calibrated sample data or real public data stubs, cleans and aligns the time series, stores the results, engineers demand and weather features, trains forecasting models, detects anomalies, and generates dashboard-ready outputs.
-
-The runnable mode is intentionally portable: it uses SQLite and synthetic calibrated data so the entire project can run locally without database servers, cloud credentials, or private datasets. The production design is represented through TimescaleDB migrations for hypertables, compression, continuous aggregates, and feature views.
+- **Portable:** The default pipeline uses calibrated synthetic data and SQLite, so it can be executed locally without external credentials, private data, or cloud infrastructure.
+- **Production-aware:** The repository includes a TimescaleDB-oriented schema design for time-series storage, continuous aggregates, compression, and future scale-out deployment.
+- **Analytics-ready:** The pipeline produces cleaned hourly datasets, engineered features, forecasts, anomaly flags, evaluation metrics, figures, and a dashboard.
+- **Research-aligned:** The project is grounded in smart-meter analytics, non-intrusive load monitoring, energy forecasting, and building-energy anomaly detection literature.
 
 ---
 
-## Research Questions
+## Problem Statement
 
-| # | Question | Pipeline Component |
-|---|---|---|
-| RQ1 | Can raw energy and weather data be cleaned into a consistent hourly time-series layer? | Acquisition + cleaning |
-| RQ2 | Can a storage design support both local reproducibility and production-grade time-series analytics? | SQLite + TimescaleDB schema |
-| RQ3 | Which engineered features explain demand behavior and peak consumption patterns? | Calendar, lag, rolling, weather, degree-hour features |
-| RQ4 | How accurately can next-hour consumption be forecast using traditional and neural models? | Seasonal-naive, Ridge, MLP, optional LSTM |
-| RQ5 | Can abnormal consumption behavior be detected with an interpretable method? | Robust z-score anomaly detector |
+Energy utilities and sustainability teams need reliable visibility into electricity consumption patterns, demand peaks, abnormal load behavior, and renewable-energy variability. However, raw energy datasets are rarely ready for direct analytics. They often contain missing timestamps, sensor spikes, irregular resolutions, inconsistent units, and limited contextual information.
+
+A practical analytics platform must therefore solve four problems before meaningful insights can be produced:
+
+1. Convert heterogeneous raw data into a consistent time-series format.
+2. Clean spikes, gaps, duplicates, and timestamp inconsistencies.
+3. Generate reliable features for forecasting and operational analysis.
+4. Detect abnormal consumption behavior in a transparent and reproducible way.
+
+GreenPower Utilities addresses these requirements through an end-to-end data-engineering and analytics workflow.
+
+---
+
+## Project Objectives
+
+| Objective | Description |
+|---|---|
+| O1 — Data Foundation | Build a clean hourly time-series layer from energy and weather data. |
+| O2 — Storage Design | Support local reproducibility through SQLite and production-oriented design through TimescaleDB migrations. |
+| O3 — Feature Engineering | Create calendar, lag, rolling-window, weather, degree-hour, and peak-load features. |
+| O4 — Forecasting | Train and compare baseline, linear, and neural forecasting models. |
+| O5 — Anomaly Detection | Detect abnormal demand behavior using an interpretable robust statistical method. |
+| O6 — Visualization | Generate figures and a dashboard for operational reporting. |
+| O7 — Reproducibility | Provide a single-command pipeline that rebuilds outputs from source data. |
+
+---
+
+## System Architecture
+
+```mermaid
+flowchart LR
+    A[Raw / Synthetic Data] --> B[Data Acquisition]
+    B --> C[Cleaning & Preprocessing]
+    C --> D[SQLite Analytics Store]
+    C --> E[TimescaleDB Production Schema]
+    D --> F[Feature Engineering]
+    F --> G[Forecasting Models]
+    F --> H[Anomaly Detection]
+    G --> I[Evaluation Metrics]
+    H --> I
+    I --> J[Figures]
+    J --> K[Static HTML Dashboard]
+    J --> L[Streamlit Dashboard Option]
+```
+
+The architecture separates the project into four layers:
+
+| Layer | Responsibility |
+|---|---|
+| Data Layer | Source acquisition, schema standardization, raw/cleaned data management |
+| Storage Layer | SQLite runtime store and TimescaleDB production schema |
+| Analytics Layer | Features, forecasting, anomaly detection, evaluation |
+| Presentation Layer | Figures, static HTML dashboard, Streamlit option |
 
 ---
 
 ## Pipeline Overview
 
-The pipeline executes the full dependency chain in order:
+The complete pipeline runs in the following order:
 
 ```text
-acquire -> clean -> store -> features -> models -> anomaly -> figures
+acquire -> clean -> store -> features -> models -> anomaly -> figures -> dashboard
 ```
 
-| Stage | Module | Main Output |
+| Stage | Module | Output |
 |---|---|---|
-| Acquire | `src/data_acquisition.py` | Raw consumption, generation, and weather files in `data/raw/` |
-| Clean | `src/clean.py` | Hourly cleaned datasets and `cleaning_report.json` |
-| Store | `src/storage.py` | SQLite database at `data/greenpower.db` |
-| Features | `src/features.py` | Feature tables, rollups, peaks, degree-hours, CSV exports |
-| Models | `src/models.py` | Forecasts, model metrics, `model_stats.json` |
-| Anomaly | `src/anomaly.py` | `anomaly_flags.csv`, precision/recall summary |
-| Figures | `src/viz.py` | Dashboard figures in `outputs/figures/` |
-| Dashboard | `dashboard/build_static.py` | Self-contained `dashboard/dashboard.html` |
+| Acquire | `src/data_acquisition.py` | Raw consumption, generation, and weather files |
+| Clean | `src/clean.py` | Cleaned hourly datasets and cleaning report |
+| Store | `src/storage.py` | SQLite database and load-audit tables |
+| Features | `src/features.py` | Feature tables, rollups, peak metrics, degree-hour features |
+| Models | `src/models.py` | Forecasts, model metrics, model summary |
+| Anomaly | `src/anomaly.py` | Anomaly flags, precision, recall, flagged-hour summary |
+| Visualization | `src/viz.py` | Dashboard-ready figures |
+| Dashboard | `dashboard/build_static.py` | Self-contained static HTML dashboard |
 
 ---
 
 ## Data Sources
 
-The project supports two modes:
+The repository supports two modes.
 
-| Mode | Purpose | Notes |
+| Mode | Description | Best Use |
 |---|---|---|
-| `synthetic` | Default runnable mode | Generates calibrated sample datasets matching the project schema, units, seasonality, and report statistics |
-| `real` | Public-data mode | Stubs are provided for UCI household consumption, Kaggle SCADA wind, and NOAA GSOD weather |
+| `synthetic` | Generates calibrated sample data matching the expected schema and seasonality. | Default reproducible run, grading, local testing |
+| `real` | Intended for prepared public datasets such as household electricity, SCADA wind, and weather data. | Extended analysis and real-data validation |
 
-Dataset periods used by the pipeline:
+Recommended real-data families:
 
-| Dataset | Period | Role |
+| Data Family | Example Source Type | Role |
 |---|---|---|
-| UCI-style household consumption | 2006-12-16 to 2010-11-26 | Demand analytics and forecasting target |
-| SCADA wind generation | 2018-01-01 to 2020-06-30 | Renewable generation analytics |
-| NOAA-style weather | 2006-12-16 to 2020-12-31 | Weather join, heating degree-hours, cooling degree-hours |
+| Household electricity demand | UCI-style household electricity data, UK-DALE, ECO-style datasets | Forecasting target and consumption analytics |
+| Renewable generation | SCADA wind turbine or generation datasets | Capacity-factor and green-power context |
+| Weather | NOAA-style station weather | Temperature sensitivity, heating/cooling degree-hours |
+| Grid / tariff metadata | Utility or open tariff references | Optional contextual reporting |
 
-The default synthetic mode makes the repository easy to evaluate because it runs anywhere without external downloads or credentials.
+The project defaults to synthetic calibrated data because a capstone repository must be easy to run, easy to verify, and independent of private credentials.
 
 ---
 
 ## Cleaning and Preprocessing
 
-The cleaning layer converts raw readings into reliable hourly UTC series.
+The cleaning stage converts raw measurements into consistent hourly UTC time series.
 
-| Cleaning Step | Method |
+| Cleaning Task | Method |
 |---|---|
-| Timestamp normalization | Convert all timestamps to UTC and sort by time |
+| Timestamp normalization | Convert timestamps to UTC and sort chronologically |
 | Duplicate handling | Drop duplicate timestamps |
-| Spike removal | Robust median absolute deviation based despiking |
-| Hourly alignment | Reindex to complete hourly grids |
-| Short-gap imputation | Interpolate gaps up to 3 hours |
-| Completeness tracking | Record whether each hour is original, imputed, or masked |
-| Long-gap handling | Preserve data quality by dropping rows still missing after imputation |
+| Spike detection | Use robust median absolute deviation based despiking |
+| Hourly alignment | Reindex each series to a complete hourly grid |
+| Short-gap imputation | Interpolate short missing gaps up to a defined limit |
+| Completeness tracking | Record whether a value is original, imputed, or unavailable |
+| Long-gap treatment | Mask or remove readings that cannot be trusted after cleaning |
 
-The cleaning report is written to:
+Cleaning outputs:
 
 ```text
+data/cleaned/
 outputs/cleaning_report.json
 ```
 
 ---
 
-## Storage Layer
+## Storage Design
 
-The runnable pipeline uses SQLite so the project can be executed locally with zero infrastructure setup.
+The project uses a dual storage strategy.
 
-| Storage Mode | Location | Purpose |
+| Storage Option | Purpose | Location |
 |---|---|---|
-| SQLite | `data/greenpower.db` | Portable local execution and evaluation |
-| TimescaleDB | `db/migrations/*.sql` | Production storage design for time-series workloads |
+| SQLite | Lightweight, reproducible, local execution | `data/greenpower.db` |
+| TimescaleDB | Production-style time-series design | `db/migrations/*.sql` |
 
-The production design includes:
+The SQLite path makes the repository runnable on any standard development machine. The TimescaleDB path demonstrates how the same analytical design can be moved toward a production-grade time-series database.
 
-- Hypertable-oriented schema for consumption, generation, and weather facts
-- Composite indexes for time-series lookups
-- One-month chunking strategy
-- Native compression strategy
-- Continuous aggregates and feature views
-- Load audit tracking
+Production-oriented database concepts represented in the repository include:
 
-To deploy the production schema:
-
-```bash
-docker compose up -d
-for f in db/migrations/*.sql; do psql "$DATABASE_URL" -f "$f"; done
-```
+- Fact tables for consumption, generation, and weather
+- Reference tables for sources and weather stations
+- Composite indexes for time-series lookup patterns
+- Continuous aggregate style feature views
+- Compression-aware historical storage design
+- Load-audit tracking
 
 ---
 
 ## Feature Engineering
 
-The feature layer creates analytical tables for modelling, reporting, and dashboarding.
+The feature layer converts cleaned time series into supervised learning and reporting features.
 
-| Feature Group | Examples |
-|---|---|
-| Calendar features | Hour, day of week, month, weekend flag, season |
-| Cyclical encodings | `hour_sin`, `hour_cos`, `doy_sin`, `doy_cos` |
-| Lag features | 1-hour, 24-hour, and 168-hour demand lags |
-| Rolling features | 24-hour rolling mean and standard deviation |
-| Weather features | Temperature, wind speed, precipitation |
-| Degree-hours | Heating degree-hours and cooling degree-hours |
-| Daily rollups | Daily total, mean, peak, minimum, peak hour |
-| Load metrics | Peak-to-average ratio and load factor |
-| Generation metrics | Daily wind generation and capacity factor |
+| Feature Group | Examples | Purpose |
+|---|---|---|
+| Calendar features | Hour, day of week, month, weekend flag, season | Captures recurring behavior |
+| Cyclical encodings | `hour_sin`, `hour_cos`, `doy_sin`, `doy_cos` | Represents cyclic time correctly |
+| Lag features | 1-hour, 24-hour, 168-hour lags | Captures short-term, daily, and weekly memory |
+| Rolling statistics | 24-hour mean and standard deviation | Captures recent trend and volatility |
+| Weather joins | Temperature, wind speed, precipitation | Adds exogenous drivers |
+| Degree-hours | Heating and cooling degree-hours | Models weather-driven demand |
+| Load metrics | Peak-to-average ratio, load factor, peak hour | Supports operational interpretation |
+| Generation metrics | Wind capacity factor, daily generation | Adds renewable-energy context |
 
-Feature tables are written back to the database and exported as CSV files under `data/cleaned/`.
+Feature outputs are stored in the database and exported for reporting.
 
 ---
 
 ## Forecasting Models
 
-The modelling layer predicts next-hour household active power on a chronological 60-day hold-out set.
+The forecasting layer predicts next-hour electricity demand using a chronological hold-out design.
 
-| Model | Role | Implementation |
+| Model | Type | Role |
 |---|---|---|
-| Seasonal-naive | Baseline | Uses value from 168 hours earlier |
-| Ridge regression | Linear ML model | scikit-learn |
-| MLP neural network | Runnable non-linear model | scikit-learn |
-| LSTM | Production deep-learning option | Keras, used only if TensorFlow is installed |
+| Seasonal-naive | Statistical baseline | Uses demand from 168 hours earlier |
+| Ridge regression | Linear ML model | Interpretable benchmark using engineered features |
+| MLP neural network | Non-linear ML model | Strong default runnable model |
+| LSTM | Optional deep sequence model | Production-oriented extension if TensorFlow is installed |
 
-The pipeline automatically uses the MLP neural network as the runnable neural model when TensorFlow is unavailable. Model outputs are saved to:
+Model artifacts:
 
 ```text
 outputs/evaluation_summary.csv
@@ -195,18 +241,15 @@ outputs/model_stats.json
 
 ## Anomaly Detection
 
-The anomaly detector is designed to be interpretable and operationally useful.
+The implemented anomaly detector is intentionally interpretable. Each reading is compared against the expected demand for its hour-of-day and month group. The residual is scaled using median absolute deviation, and the system flags:
 
-Each reading is compared against the expected value for its hour-of-day and month group. The residual is scaled using median absolute deviation so naturally variable evening hours are not over-flagged.
+- sustained deviations over consecutive hours,
+- isolated hard spikes,
+- abnormal demand behavior under injected test scenarios.
 
-The detector flags:
+This approach gives a transparent baseline that is suitable for operational reporting. The project can later be extended toward prediction-residual anomaly detection, autoencoders, sequence models, or NILM-informed diagnostics.
 
-- Sustained deviations lasting at least two consecutive hours
-- Single hard spikes with high robust z-score and large absolute deviation
-
-For evaluation, synthetic outages and spikes are injected into a copy of the clean series. The detector reports precision, recall, and flagged hours.
-
-Outputs:
+Anomaly outputs:
 
 ```text
 outputs/anomaly_flags.csv
@@ -215,9 +258,9 @@ outputs/anomaly_stats.json
 
 ---
 
-## Dashboard
+## Dashboard and Reporting
 
-The dashboard builder creates a self-contained HTML file that opens in any browser without a server.
+The dashboard layer converts pipeline outputs into a self-contained reporting artifact.
 
 ```bash
 python dashboard/build_static.py
@@ -228,22 +271,21 @@ Dashboard panels include:
 
 | Panel | Purpose |
 |---|---|
-| Daily Load Profile & Evening Peak | Shows recurring consumption shape and peak behavior |
-| Forecast vs Actual | Compares model predictions against the final test week |
+| Daily Load Profile | Shows recurring demand behavior and evening peaks |
+| Forecast vs Actual | Compares predictions with observed consumption |
 | Model Error Comparison | Summarizes MAE, RMSE, and MAPE |
-| Anomaly Monitor | Visualizes flagged abnormal readings |
-| Consumption vs Temperature | Shows weather-demand relationship |
-| Wind Capacity Factor by Month | Summarizes renewable generation performance |
+| Anomaly Monitor | Shows abnormal consumption periods |
+| Consumption vs Temperature | Visualizes weather sensitivity |
+| Renewable Performance | Summarizes generation and capacity-factor behavior |
 
 ---
 
-## Results
+## Results Summary
 
-Latest documented run:
+Latest documented results from the project pipeline:
 
 | Metric | Result |
-|---|---|
-| Best runnable forecast model | MLP neural net |
+|---|---:|
 | Seasonal-naive MAPE | 28.5% |
 | Ridge regression MAPE | 17.3% |
 | MLP neural net MAPE | 13.9% |
@@ -251,35 +293,54 @@ Latest documented run:
 | Anomaly precision | 0.97 |
 | Anomaly recall | 0.88 |
 
-**Key findings:**
+Key interpretation:
 
-- Weather-aware and calendar-aware features improve demand forecasting over the weekly seasonal-naive baseline.
-- The MLP model provides the best runnable forecast performance while keeping the environment lightweight.
-- Robust anomaly detection gives high precision and recall on injected outage/spike scenarios.
-- SQLite makes the project easy to run locally, while TimescaleDB migrations preserve a production-ready storage design.
+- Calendar, lag, rolling, and weather features improve load forecasting over the seasonal baseline.
+- The MLP model gives the best lightweight runnable forecast performance.
+- Robust statistical anomaly detection performs strongly on injected outage and spike scenarios.
+- The architecture is suitable for extension into more advanced smart-meter analytics.
 
 ---
 
 ## Quick Start
 
-Install dependencies and run the full pipeline:
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Kirtiman-sarangi/greenpower-capstone.git
+cd greenpower-capstone
+```
+
+### 2. Create an environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+For Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
+```
+
+### 4. Run the complete pipeline
+
+```bash
 python run_pipeline.py
 ```
 
-Build and open the dashboard:
+### 5. Build the dashboard
 
 ```bash
 python dashboard/build_static.py
 open dashboard/dashboard.html
-```
-
-Run with real public-data mode after preparing the required source files and credentials:
-
-```bash
-python run_pipeline.py --source real
 ```
 
 ---
@@ -288,62 +349,53 @@ python run_pipeline.py --source real
 
 ```text
 greenpower-capstone/
-├── README.md                  # Project overview and execution guide
-├── run_pipeline.py            # End-to-end pipeline driver
-├── requirements.txt           # Python dependencies
-├── docker-compose.yml         # Production storage support
+├── README.md
+├── run_pipeline.py
+├── requirements.txt
+├── docker-compose.yml
 │
-├── src/                       # Core pipeline modules
-│   ├── config.py              # Paths, date ranges, constants, seed
-│   ├── data_acquisition.py    # Synthetic and real-data acquisition modes
-│   ├── clean.py               # Cleaning, despiking, hourly alignment
-│   ├── storage.py             # SQLite load and audit tables
-│   ├── features.py            # Rollups, lag features, weather joins
-│   ├── models.py              # Forecasting models and evaluation
-│   ├── anomaly.py             # Robust anomaly detector
-│   └── viz.py                 # Figure generation
+├── src/
+│   ├── config.py
+│   ├── data_acquisition.py
+│   ├── clean.py
+│   ├── storage.py
+│   ├── features.py
+│   ├── models.py
+│   ├── anomaly.py
+│   └── viz.py
 │
 ├── db/
-│   └── migrations/            # TimescaleDB production schema and views
+│   └── migrations/
 │
 ├── dashboard/
-│   ├── build_static.py        # Static dashboard generator
-│   ├── dashboard.html         # Generated browser dashboard
-│   └── app.py                 # Streamlit dashboard option
+│   ├── build_static.py
+│   ├── dashboard.html
+│   └── app.py
 │
-├── data/                      # Raw, cleaned, and local database files
-├── outputs/                   # Metrics, forecasts, anomaly flags, figures
-├── notebooks/                 # Analysis walkthroughs
-└── reports/                   # Weekly capstone deliverables
+├── data/
+│   ├── raw/
+│   ├── cleaned/
+│   └── greenpower.db
+│
+├── outputs/
+│   ├── figures/
+│   ├── cleaning_report.json
+│   ├── feature_stats.json
+│   ├── evaluation_summary.csv
+│   ├── forecasts.csv
+│   ├── model_stats.json
+│   ├── anomaly_flags.csv
+│   └── anomaly_stats.json
+│
+├── notebooks/
+└── reports/
 ```
-
----
-
-## Progress
-
-- [x] **Week 1:** Data acquisition strategy and source identification
-- [x] **Week 2:** Cleaning, preprocessing, spike removal, gap handling, hourly alignment
-- [x] **Week 3:** Storage layer with local SQLite runtime and TimescaleDB production schema
-- [x] **Week 4:** Feature engineering, rollups, calendar/weather joins, demand analytics
-- [x] **Week 5:** Forecasting models and anomaly detection
-- [x] **Week 6:** Dashboard, figures, final integration, reproducible run script
 
 ---
 
 ## Reproducibility
 
-The full project can be reproduced locally with the default synthetic mode:
-
-```bash
-git clone https://github.com/Kirtiman-sarangi/greenpower-capstone.git
-cd greenpower-capstone
-pip install -r requirements.txt
-python run_pipeline.py
-python dashboard/build_static.py
-open dashboard/dashboard.html
-```
-
-Expected generated artifacts:
+A reproducible run should generate the following artifacts:
 
 ```text
 data/raw/
@@ -352,11 +404,67 @@ data/greenpower.db
 outputs/cleaning_report.json
 outputs/feature_stats.json
 outputs/evaluation_summary.csv
+outputs/forecasts.csv
 outputs/model_stats.json
+outputs/anomaly_flags.csv
 outputs/anomaly_stats.json
 outputs/figures/
 dashboard/dashboard.html
 ```
+
+Recommended verification steps:
+
+```bash
+python run_pipeline.py
+ls data/greenpower.db
+ls outputs/
+python dashboard/build_static.py
+ls dashboard/dashboard.html
+```
+
+---
+
+## Professional Scope and Limitations
+
+This repository is designed as a capstone-quality analytics system, not a production utility deployment. The default pipeline uses calibrated synthetic data for portability and repeatability. Real-data execution requires preparing public datasets in the expected schema.
+
+Current strengths:
+
+- Fully runnable local pipeline
+- Clear modular design
+- Strong feature-engineering workflow
+- Forecasting and anomaly-detection outputs
+- Dashboard-ready presentation layer
+- Production-aware TimescaleDB design
+
+Recommended future enhancements:
+
+- Add automated data validation tests
+- Add CI workflow for pipeline smoke tests
+- Add model registry and experiment tracking
+- Add online anomaly detection for streaming smart-meter data
+- Add richer evaluation with F1 score, event-level recall, and detection delay
+- Add real-data benchmark notebooks using open datasets
+
+---
+
+## References
+
+[1] Hart, G. W. “Nonintrusive appliance load monitoring.” *Proceedings of the IEEE*, 80(12), 1870–1891, 1992. DOI: [10.1109/5.192069](https://doi.org/10.1109/5.192069)
+
+[2] Beckel, C., Kleiminger, W., Cicchetti, R., Staake, T., and Santini, S. “The ECO Data Set and the Performance of Non-Intrusive Load Monitoring Algorithms.” *Proceedings of the 1st ACM Conference on Embedded Systems for Energy-Efficient Buildings*, 2014.
+
+[3] Kelly, J., and Knottenbelt, W. “The UK-DALE dataset, domestic appliance-level electricity demand and whole-house demand from five UK homes.” *Scientific Data*, 2015.
+
+[4] Batra, N., Kelly, J., Parson, O., Dutta, H., Knottenbelt, W., Rogers, A., Singh, A., and Srivastava, M. “NILMTK: An Open Source Toolkit for Non-intrusive Load Monitoring.” *Proceedings of ACM e-Energy*, 2014.
+
+[5] Liu, X., and Nielsen, P. S. “Scalable prediction-based online anomaly detection for smart meter data.” *Information Systems*, 2018.
+
+[6] Fan, C., Xiao, F., Zhao, Y., and Wang, J. “Analytical investigation of autoencoder-based methods for unsupervised anomaly detection in building energy data.” *Applied Energy*, 2018.
+
+[7] Zoha, A., Gluhak, A., Imran, M. A., and Rajasegarar, S. “Non-Intrusive Load Monitoring Approaches for Disaggregated Energy Sensing: A Survey.” *Sensors*, 2012.
+
+[8] Himeur, Y., Alsalemi, A., Bensaali, F., and Amira, A. “Artificial intelligence based anomaly detection of energy consumption in buildings: A review.” *Applied Energy*, 2021.
 
 ---
 
