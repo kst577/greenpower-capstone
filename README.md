@@ -78,8 +78,8 @@ greenpower-capstone/
 
 ## Team
 
-· Harshit Nirmal Jain (G25AI1021)
-· K R Devika (G25AI1022) 
-· Kartik Dadhich (G25AI1023) 
-· Kirtiman Sarangi (G25AI1024) 
-· Kollipara Teja (G25AI1025)
+- Harshit Nirmal Jain (G25AI1021)
+- K R Devika (G25AI1022)
+- Kartik Dadhich (G25AI1023)
+- Kirtiman Sarangi (G25AI1024)
+- Kollipara Teja (G25AI1025)
