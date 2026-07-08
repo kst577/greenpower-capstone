@@ -2,15 +2,24 @@
 
 An end-to-end energy analytics capstone for transforming raw electricity, renewable-generation, and weather data into a clean hourly time-series layer, engineered forecasting features, predictive models, anomaly flags, and a dashboard-ready reporting system.
 
-**Capstone:** GreenPower Utilities — Energy Consumption Analytics  
-**Programme:** M.Tech Data Engineering, IIT Jodhpur  
-**Team:** Harshit Nirmal Jain (G25AI1021), K R Devika (G25AI1022), Kartik Dadhich (G25AI1023), Kirtiman Sarangi (G25AI1024), Kollipara Teja (G25AI1025)    
-**Inspired by:** Enhancing anomaly detection in electrical consumption profiles through computational intelligence  
-- **Authors:** Santiago Felipe Luna-Romero, Xavier Serrano-Guerrero, Mauren Abreu de Souza, Guillermo Escrivá-Escrivà    
-- **Journal:** *Energy Reports*, Volume 11, June 2024, Pages 951–962     
+## Project Overview
 
-**Paper DOI:** [10.1016/j.egyr.2023.12.045](https://doi.org/10.1016/j.egyr.2023.12.045)      
-**Theme:** Smart-meter analytics, demand forecasting, anomaly detection, renewable-energy context, and operational dashboarding
+GreenPower Utilities demonstrates how a modern utility analytics workflow can be designed from ingestion to reporting. The project combines data cleaning, time-series storage, feature engineering, machine-learning based demand forecasting, robust anomaly detection, and executive dashboarding into one reproducible pipeline.
+
+The implementation is intentionally designed for both **local reproducibility** and **production awareness**. The default pipeline runs with calibrated sample data and SQLite so it can be evaluated anywhere, while the database design also includes a TimescaleDB-oriented production path for scalable time-series workloads.
+
+## Capstone Details
+
+| Item | Details |
+|---|---|
+| **Capstone Project** | GreenPower Utilities — Energy Consumption Analytics |
+| **Programme** | M.Tech Data Engineering, IIT Jodhpur |
+| **Team** | Harshit Nirmal Jain (G25AI1021)<br>K R Devika (G25AI1022)<br>Kartik Dadhich (G25AI1023)<br>Kirtiman Sarangi (G25AI1024)<br>Kollipara Teja (G25AI1025) |
+| **Inspired by** | *Enhancing anomaly detection in electrical consumption profiles through computational intelligence* |
+| **Authors** | Santiago Felipe Luna-Romero, Xavier Serrano-Guerrero, Mauren Abreu de Souza, Guillermo Escrivá-Escrivà |
+| **Journal** | *Energy Reports*, Volume 11, June 2024, Pages 951–962 |
+| **Paper DOI** | [10.1016/j.egyr.2023.12.045](https://doi.org/10.1016/j.egyr.2023.12.045) |
+| **Focus Areas** | Smart-meter analytics, demand forecasting, anomaly detection, renewable-energy context, and operational dashboarding |
 
 ---
 
