@@ -287,6 +287,26 @@ Dashboard panels include:
 
 ---
 
+## Interactive Dashboard
+
+Alongside the static HTML report, an interactive multi-page Streamlit app
+(`dashboard/app.py`) reads the live pipeline outputs and renders zoomable,
+hoverable Plotly charts. Launch it with `streamlit run dashboard/app.py`
+(opens at `http://localhost:8501`).
+
+| Page | Highlights |
+|------|------------|
+| Overview | headline KPIs, pipeline flow, dataset coverage, full-history trend |
+| Consumption | date-range + weekday/weekend filters, load profile, hour × weekday heatmap, temperature scatter, sub-meter breakdown |
+| Forecasting | model selector, error leaderboard, forecast vs actual, residual + predicted-vs-actual plots, CSV export |
+| Anomaly Detection | precision/recall/F1, zoomable anomaly stream, confusion matrix, flagged-hours log, CSV export |
+| Wind Generation | capacity factor by month, generation trend, wind power curve |
+| Data Quality | per-dataset completeness, raw→clean row counts, database inventory, cleaning report |
+
+Shared theme, cached data loaders and Plotly styling live in `dashboard/lib.py`.
+
+---
+
 ## Results Summary
 
 Latest documented results from the project pipeline:
@@ -343,7 +363,15 @@ pip install -r requirements.txt
 python run_pipeline.py
 ```
 
-### 5. Build the dashboard
+### 5. View the dashboard
+
+Interactive multi-page app (recommended for demos):
+
+```bash
+streamlit run dashboard/app.py            # opens http://localhost:8501
+```
+
+Or build the static, dependency-free HTML report:
 
 ```bash
 python dashboard/build_static.py
@@ -375,9 +403,11 @@ greenpower-capstone/
 │   └── migrations/
 │
 ├── dashboard/
+│   ├── app.py               # interactive Streamlit entry (Overview)
+│   ├── lib.py               # shared theme + data loaders
+│   ├── pages/               # Consumption, Forecasting, Anomaly, Wind, Data Quality
 │   ├── build_static.py
-│   ├── dashboard.html
-│   └── app.py
+│   └── dashboard.html
 │
 ├── data/
 │   ├── raw/
