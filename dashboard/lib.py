@@ -52,6 +52,9 @@ TEAM = [
     ("Kollipara Teja", "G25AI1025"),
 ]
 
+# Roll number → display name (case-insensitive lookup)
+TEAM_BY_ROLL = {roll.upper(): name for name, roll in TEAM}
+
 
 # --------------------------------------------------------------------------
 # Page setup + global CSS
@@ -112,15 +115,118 @@ def setup_page(title: str, icon: str = "⚡") -> None:
               padding:2px 10px; border-radius:20px; font-size:12px; font-weight:700; }}
           .gp-card {{ background:#fff; border:1px solid {GRID}; border-radius:14px;
               padding:18px 20px; box-shadow:0 2px 6px rgba(20,57,42,.05); }}
+          .gp-login-wrap {{
+              max-width: 440px; margin: 4vh auto 0; background:#fff;
+              border:1px solid {GRID}; border-radius:18px; padding:28px 30px 24px;
+              box-shadow:0 10px 28px rgba(20,57,42,.10);
+          }}
+          .gp-login-wrap h2 {{ margin:0 0 6px; color:{DARK}; font-size:24px; }}
+          .gp-login-wrap p {{ margin:0 0 18px; color:{MUTED}; font-size:14px; }}
+          .gp-login-hint {{
+              margin-top:14px; font-size:12px; color:{MUTED}; line-height:1.5;
+              background:#f4f7f5; border-radius:10px; padding:10px 12px;
+          }}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
 
+def normalize_roll(roll: str) -> str:
+    """Normalize roll numbers so G25AI1021 / g25ai1021 / spaces all match."""
+    return "".join(str(roll or "").strip().upper().split())
+
+
+def is_authenticated() -> bool:
+    return bool(st.session_state.get("authenticated"))
+
+
+def current_user() -> dict | None:
+    if not is_authenticated():
+        return None
+    return {
+        "name": st.session_state.get("user_name", ""),
+        "roll": st.session_state.get("user_roll", ""),
+    }
+
+
+def logout() -> None:
+    for key in ("authenticated", "user_name", "user_roll"):
+        st.session_state.pop(key, None)
+
+
+def _render_login() -> None:
+    """Full-page roll-number gate shown before any dashboard content."""
+    # Hide multipage nav until the user is signed in
+    st.markdown(
+        """
+        <style>
+          div[data-testid="stSidebarNav"] { display: none !important; }
+          section[data-testid="stSidebar"] { display: none !important; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <div class="gp-login-wrap">
+          <h2>GreenPower ⚡ Login</h2>
+          <p>Enter your IIT Jodhpur roll number to open the Group 5 dashboard.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    # Keep the form visually under the card
+    left, mid, right = st.columns([1, 1.4, 1])
+    with mid:
+        with st.form("gp_login_form", clear_on_submit=False):
+            roll_in = st.text_input(
+                "Roll number",
+                placeholder="e.g. G25AI1025",
+                help="Use your official roll number (case-insensitive).",
+            )
+            submitted = st.form_submit_button("Sign in", use_container_width=True, type="primary")
+        if submitted:
+            roll = normalize_roll(roll_in)
+            if not roll:
+                st.error("Please enter your roll number.")
+            elif roll in TEAM_BY_ROLL:
+                st.session_state["authenticated"] = True
+                st.session_state["user_roll"] = roll
+                st.session_state["user_name"] = TEAM_BY_ROLL[roll]
+                st.rerun()
+            else:
+                st.error("Access denied. Only Group 5 roll numbers can sign in.")
+        st.markdown(
+            '<div class="gp-login-hint">'
+            "<b>Authorized team</b><br>"
+            + "<br>".join(f"{name} · {roll}" for name, roll in TEAM)
+            + "</div>",
+            unsafe_allow_html=True,
+        )
+
+
+def require_login() -> bool:
+    """Gate every page. Returns True only after a valid roll-number login."""
+    if is_authenticated():
+        return True
+    _render_login()
+    return False
+
+
 def sidebar() -> None:
     with st.sidebar:
         st.caption("Energy Consumption Analytics")
+        user = current_user()
+        if user:
+            st.markdown(
+                f'<div class="gp-member">Signed in as <b>{user["name"]}</b>'
+                f'<span class="gp-roll">{user["roll"]}</span></div>',
+                unsafe_allow_html=True,
+            )
+            if st.button("Sign out", use_container_width=True):
+                logout()
+                st.rerun()
         st.markdown("---")
         st.markdown("**Capstone · Group 5**")
         st.markdown("IIT Jodhpur")
@@ -181,13 +287,43 @@ def db_exists() -> bool:
     return DB.exists()
 
 
+def ensure_pipeline_data() -> bool:
+    """Build pipeline outputs on first cloud boot if the SQLite DB is missing.
+
+    The DB is gitignored (too large for GitHub), so Streamlit Cloud needs a
+    one-time local rebuild. Subsequent visits reuse the generated files.
+    """
+    if db_exists() and (OUTPUTS / "model_stats.json").exists():
+        return True
+    try:
+        import subprocess
+        import sys
+
+        with st.spinner("First-time setup: building pipeline outputs (~30–60s)…"):
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "run_pipeline.py")],
+                cwd=str(ROOT),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr[-2000:] or result.stdout[-2000:] or "pipeline failed")
+        st.cache_data.clear()
+        return db_exists()
+    except Exception as exc:  # pragma: no cover - cloud bootstrap path
+        st.error(
+            "Could not build pipeline data automatically.\n\n"
+            f"```\n{exc}\n```\n\n"
+            "Run locally first:\n\n"
+            "```bash\npython run_pipeline.py\n```"
+        )
+        return False
+
+
 def require_data() -> bool:
     """Guard used at the top of every page."""
-    if not db_exists():
-        st.error(
-            "No pipeline outputs found. Run the pipeline first:\n\n"
-            "```bash\nuv run python run_pipeline.py\n```"
-        )
+    if not ensure_pipeline_data():
         return False
     return True
 

@@ -294,6 +294,22 @@ Alongside the static HTML report, an interactive multi-page Streamlit app
 hoverable Plotly charts. Launch it with `streamlit run dashboard/app.py`
 (opens at `http://localhost:8501`).
 
+### Roll-number login (team access)
+
+The live dashboard is gated. Only Group 5 roll numbers can sign in:
+
+| Name | Roll |
+|------|------|
+| Harshit Nirmal Jain | G25AI1021 |
+| K R Devika | G25AI1022 |
+| Kartik Dadhich | G25AI1023 |
+| Kirtiman Sarangi | G25AI1024 |
+| Kollipara Teja | G25AI1025 |
+
+Enter the roll number on the login screen (case-insensitive). After sign-in,
+the sidebar shows the signed-in member and a **Sign out** button. Page
+navigation is hidden until login succeeds.
+
 | Page | Highlights |
 |------|------------|
 | Overview | headline KPIs, pipeline flow, dataset coverage, full-history trend |
@@ -303,7 +319,22 @@ hoverable Plotly charts. Launch it with `streamlit run dashboard/app.py`
 | Wind Generation | capacity factor by month, generation trend, wind power curve |
 | Data Quality | per-dataset completeness, raw→clean row counts, database inventory, cleaning report |
 
-Shared theme, cached data loaders and Plotly styling live in `dashboard/lib.py`.
+Shared theme, auth, cached data loaders and Plotly styling live in
+`dashboard/lib.py`.
+
+### Deploy on Streamlit Community Cloud
+
+1. Push this repository to GitHub (see commands at the end of your local workflow).
+2. Go to [share.streamlit.io](https://share.streamlit.io) → **New app**.
+3. Select the repo, branch `master`, and set:
+   - **Main file path:** `dashboard/app.py`
+   - **Python version:** 3.11+ (or the default offered)
+4. Click **Deploy**.
+
+On first boot the app auto-runs `python run_pipeline.py` if
+`data/greenpower.db` is missing (the DB is gitignored). That takes ~30–60
+seconds once; later visits reuse the generated files on the cloud instance.
+Team members then open the public URL and sign in with their roll number.
 
 ---
 
@@ -371,6 +402,8 @@ Interactive multi-page app (recommended for demos):
 streamlit run dashboard/app.py            # opens http://localhost:8501
 ```
 
+Sign in with a Group 5 roll number (e.g. `G25AI1025`).
+
 Or build the static, dependency-free HTML report:
 
 ```bash
@@ -403,11 +436,14 @@ greenpower-capstone/
 │   └── migrations/
 │
 ├── dashboard/
-│   ├── app.py               # interactive Streamlit entry (Overview)
-│   ├── lib.py               # shared theme + data loaders
+│   ├── app.py               # interactive Streamlit entry (Overview + login)
+│   ├── lib.py               # shared theme, roll-number auth, data loaders
 │   ├── pages/               # Consumption, Forecasting, Anomaly, Wind, Data Quality
 │   ├── build_static.py
 │   └── dashboard.html
+│
+├── .streamlit/
+│   └── config.toml          # Streamlit Cloud theme / server settings
 │
 ├── data/
 │   ├── raw/

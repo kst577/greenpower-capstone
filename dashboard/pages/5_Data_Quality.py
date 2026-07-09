@@ -8,6 +8,8 @@ import streamlit as st
 import lib
 
 lib.setup_page("Data Quality", "🧹")
+if not lib.require_login():
+    st.stop()
 lib.sidebar()
 if not lib.require_data():
     st.stop()
